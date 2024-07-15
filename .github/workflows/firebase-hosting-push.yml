@@ -31,11 +31,13 @@ jobs:
         with:
           channel: "stable"
           flutter-version: 3.3.8
+      - name: 🔑 Create $HOME/private
+        run: |
+          mkdir $HOME/private
       - name: 🔑 Resolve google-services.json
         env:
           FIREBASE_SECRET_ENCRYPT: ${{ secrets.FIREBASE_SECRET_ENCRYPT }}
         run: |
-          mkdir $HOME/private
           gpg --quiet --batch --yes --decrypt --passphrase="$FIREBASE_SECRET_ENCRYPT" \
           --output $HOME/private/services.tar services.tar.gpg
           tar xvf $HOME/private/services.tar
@@ -43,7 +45,6 @@ jobs:
         env:
           FIREBASE_SECRET_ENCRYPT: ${{ secrets.FIREBASE_SECRET_ENCRYPT }}
         run: |
-          mkdir $HOME/private
           gpg --quiet --batch --yes --decrypt --passphrase="$FIREBASE_SECRET_ENCRYPT" \
           --output $HOME/private/firebaseconfig.tar firebaseconfig.tar.gpg
           tar xvf $HOME/private/firebaseconfig.tar
