@@ -95,6 +95,16 @@ jobs:
         with:
           name: build
           path: build/web
+      - name: 🔑 Create $HOME/private
+        run: |
+          mkdir $HOME/private
+      - name: 🔑 Resolve firebase.json
+        env:
+          FIREBASE_SECRET_ENCRYPT: ${{ secrets.FIREBASE_SECRET_ENCRYPT }}
+        run: |
+          gpg --quiet --batch --yes --decrypt --passphrase="$FIREBASE_SECRET_ENCRYPT" \
+          --output $HOME/private/firebaseconfig.tar firebaseconfig.tar.gpg
+          tar xvf $HOME/private/firebaseconfig.tar
       - name: 🎯 Deploy to firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
