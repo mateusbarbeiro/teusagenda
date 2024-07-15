@@ -45,3 +45,9 @@ app.*.map.json
 
 /firebase.json
 /android/app/google-services.json
+/.firebase/teus-agenda/hosting/.last_build_id
+/.firebase/teus-agenda/
+/.firebase/hosting.LmZpcmViYXNlXHRldXMtYWdlbmRhXGhvc3Rpbmc.cache
+/.firebase/hosting.YnVpbGRcd2Vi.cache
+/services.tar
+/firebaseconfig.tar
