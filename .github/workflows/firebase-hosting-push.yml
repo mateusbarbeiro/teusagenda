@@ -1,22 +1,14 @@
-name: Build and Deploy
+name: Setup, Build and Deploy
 on:
   push:
     branches:
       - main
 jobs:
-  build:
-    name: Build
+
+  setup:
+    name: Setup
     runs-on: ubuntu-latest
-    environment: dev
     steps:
-      - name: 📚 Git Checkout
-        uses: actions/checkout@v3
-      - name: 🐦 Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: 3.22.2
-          channel: "stable"
-          cache: true
       - name: 🔑 Create $HOME/private
         run: |
           mkdir $HOME/private
@@ -27,13 +19,30 @@ jobs:
           gpg --quiet --batch --yes --decrypt --passphrase="$FIREBASE_SECRET_ENCRYPT" \
           --output $HOME/private/firebaseconfig.tar firebaseconfig.tar.gpg
           tar xvf $HOME/private/firebaseconfig.tar
-      - name: 💾 Salvar cache firebase.json
-        uses: actions/cache@v3
+      - name: ⬆️ Upload firebase config
+        uses: actions/upload-artifact@v3
         with:
+          name: firebaseconfig
           path: $HOME/private
-          key: ${{ runner.os }}-build-firebase-cache-${{ hashFiles('firebaseconfig.tar.gpg') }}
-          restore-keys: |
-            ${{ runner.os }}-build-firebase-cache-
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v3
+      - name: ⬇️ Download firebase config
+        uses: actions/download-artifact@v3
+        with:
+          name: firebaseconfig
+          path: $HOME/private
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.22.2
+          channel: "stable"
+          cache: true
       - name: 📦 Install Dependencies
         run: |
           flutter pub get
@@ -62,7 +71,7 @@ jobs:
           --dart-define=WINDOWS_APP_ID="$env:WINDOWS_APP_ID" 
           --dart-define=MESSAGING_SENDER_ID="$env:MESSAGING_SENDER_ID" 
           -t lib/main.dart
-      - name: ⬇️ Archive Production Artifact
+      - name: ⬆️️ Archive Production Artifact
         uses: actions/upload-artifact@master
         with:
           name: build
@@ -81,13 +90,11 @@ jobs:
         with:
           name: build
           path: build/web
-      - name: 💾 Recuperar cache firebase.json
-        uses: actions/cache@v3
+      - name: ⬇️ Download firebase config
+        uses: actions/download-artifact@v3
         with:
-            path: $HOME/private
-            key: ${{ runner.os }}-build-firebase-cache-${{ hashFiles('firebaseconfig.tar.gpg') }}
-            restore-keys: |
-              ${{ runner.os }}-build-firebase-cache-
+          name: firebaseconfig
+          path: $HOME/private
       - name: 🎯 Deploy to firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -95,3 +102,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TEUS_AGENDA }}
           channelId: live
           projectId: teus-agenda
+          workingDirectory: $HOME/private
