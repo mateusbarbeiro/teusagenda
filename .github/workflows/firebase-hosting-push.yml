@@ -27,6 +27,13 @@ jobs:
           gpg --quiet --batch --yes --decrypt --passphrase="$FIREBASE_SECRET_ENCRYPT" \
           --output $HOME/private/firebaseconfig.tar firebaseconfig.tar.gpg
           tar xvf $HOME/private/firebaseconfig.tar
+      - name: 💾 Salvar cache firebase.json
+        uses: actions/cache@v3
+        with:
+          path: $HOME/private
+          key: ${{ runner.os }}-build-firebase-cache-${{ hashFiles('firebaseconfig.tar.gpg') }}
+          restore-keys: |
+            ${{ runner.os }}-build-firebase-cache-
       - name: 📦 Install Dependencies
         run: |
           flutter pub get
@@ -74,6 +81,13 @@ jobs:
         with:
           name: build
           path: build/web
+      - name: 💾 Recuperar cache firebase.json
+        uses: actions/cache@v3
+        with:
+            path: $HOME/private
+            key: ${{ runner.os }}-build-firebase-cache-${{ hashFiles('firebaseconfig.tar.gpg') }}
+            restore-keys: |
+              ${{ runner.os }}-build-firebase-cache-
       - name: 🎯 Deploy to firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
