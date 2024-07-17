@@ -7,17 +7,6 @@ on:
     branches:
       - main
 jobs:
-  semantic-pull-request:
-    name: "Semantic"
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/semantic_pull_request.yml@v1
-
-#  analyze:
-#    name: "Analyze"
-#    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/flutter_package.yml@v1
-#    with:
-#      flutter_channel: stable
-
-
   build:
     name: Build
     needs: [semantic-pull-request]
@@ -29,7 +18,9 @@ jobs:
       - name: 🐦 Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: 3.22.2
           channel: "stable"
+          cache: true
       - name: 🔑 Create $HOME/private
         run: |
           mkdir $HOME/private
@@ -49,9 +40,7 @@ jobs:
           tar xvf $HOME/private/firebaseconfig.tar
       - name: 📦 Install Dependencies
         run: |
-          flutter pub global activate very_good_cli
-          very_good --analytics false
-          very_good packages get --recursive
+          flutter pub get
       - name: 🛠️ Build the application
         env:
           ANDROID_API_KEY: ${{ secrets.ANDROID_API_KEY }}
@@ -75,7 +64,8 @@ jobs:
           --dart-define=WEB_APP_ID="$env:WEB_APP_ID" 
           --dart-define=WINDOWS_API_KEY="$env:WINDOWS_API_KEY" 
           --dart-define=WINDOWS_APP_ID="$env:WINDOWS_APP_ID" 
-          --dart-define=MESSAGING_SENDER_ID="$env:MESSAGING_SENDER_ID" -t lib/main.dart
+          --dart-define=MESSAGING_SENDER_ID="$env:MESSAGING_SENDER_ID" 
+          -t lib/main.dart
       - name: ⬇️ Archive Production Artifact
         uses: actions/upload-artifact@master
         with:
