@@ -22,7 +22,7 @@ jobs:
           --output $HOME/private/firebaseconfig.tar firebaseconfig.tar.gpg
           tar xvf $HOME/private/firebaseconfig.tar
       - name: ⬆️ Upload firebase config
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@master
         with:
           name: firebaseconfig
           path: $HOME/private
@@ -36,7 +36,7 @@ jobs:
       - name: 📚 Git Checkout
         uses: actions/checkout@v3
       - name: ⬇️ Download firebase config
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@master
         with:
           name: firebaseconfig
           path: $HOME/private
