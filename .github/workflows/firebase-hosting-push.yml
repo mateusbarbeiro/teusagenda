@@ -8,6 +8,7 @@ jobs:
   setup:
     name: Setup
     runs-on: ubuntu-latest
+    environment: dev
     steps:
       - name: 🔑 Create $HOME/private
         run: |
@@ -29,6 +30,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     environment: dev
+    needs: setup
     steps:
       - name: 📚 Git Checkout
         uses: actions/checkout@v3
