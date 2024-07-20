@@ -62,3 +62,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TEUS_AGENDA }}
           channelId: live
           projectId: teus-agenda
+          workingDirectory: build/web
