@@ -54,6 +54,11 @@ jobs:
       - name: Listar arquivos
         run: |
           ls
+          cd build
+          ls
+          cd ..
+          cd web 
+          ls
       - name: 🎯 Deploy to firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
